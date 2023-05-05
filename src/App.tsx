@@ -32,13 +32,14 @@ function App() {
 
   const [results, setResults] = useState<GameResult[]>([]);
 
-  const { handleSubmit, register } = useForm<Player>();
+  const { handleSubmit, register, reset } = useForm<Player>();
 
   const onSubmit = handleSubmit((values) => {
     if (players.find((player) => player.name === values.name))
       return alert("Player already exists");
 
     setPlayers((all) => [...all, { ...values, rating: 1000, losses: 0, wins: 0 }]);
+    reset()
   });
 
   function selectRandomPlayers() {
