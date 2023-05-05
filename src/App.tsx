@@ -88,13 +88,20 @@ function App() {
   return (
     <div className="flex space-x-4">
       <div className="w-1/3 flex flex-col bg-gray-100 p-4 font-sans">
-        <form onSubmit={onSubmit}>
+        <form onSubmit={onSubmit} className="flex flex-col mb-4">
+          <div className="flex space-x-2">
           <input
             {...register("name")}
             type="text"
             name="name"
             placeholder="Player name"
+            className="flex-1"
           />
+          <button className="h-full">Add player</button>
+          </div>
+          <div>
+            <small className="text-gray-500">Use <kbd className="bg-gray-200 px-1 rounded border border-gray-300">Enter</kbd> to add a player quickly</small>
+          </div>
         </form>
 
         <table className="text-left">
@@ -123,7 +130,7 @@ function App() {
           <ul className="list-none m-0 p-0 space-y-2">
             {results.map((result, index) => (
               <li key={index} className="m-0 p-0">
-                🏆 (+{result.winnerDelta}) <strong>{result.winner.name}</strong> vs <strong>{result.loser.name}</strong>
+                🏆 (+{result.winnerDelta}) <strong>{result.winner.name}</strong> beat <strong>{result.loser.name}</strong>
               </li>
             ))}
           </ul>
