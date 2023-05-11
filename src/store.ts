@@ -10,19 +10,21 @@ export const useStore = create<WithLiveblocks<State>>()(
   liveblocks(
     (set, get) => ({
       players: [],
-      addPlayer: (player: Player) => set(s => ({ players: [...s.players, player] })),
-      removePlayer: (player: Player) =>
+      addPlayer: player => set(s => ({ players: [...s.players, player] })),
+      removePlayer: player =>
         set(s => ({ players: s.players.filter(p => p.title !== player.title) })),
-      updatePlayer: (player: Player) =>
+      updatePlayer: player =>
         set(s => ({ players: s.players.map(p => (p.title === player.title ? player : p)) })),
 
       results: [],
-      addResult: (result: Omit<GameResult, 'ts'>) =>
-        set(s => ({ results: [...s.results, { ...result, ts: Date.now() }] })),
+      addResult: result => set(s => ({ results: [...s.results, { ...result, ts: Date.now() }] })),
 
       game: {
         home: null,
         away: null,
+      },
+      updateGamePlayer: (type, player) => {
+        set({ game: { ...get().game, [type]: player } })
       },
       newGame: () => {
         const orderByGames = [...get().players].sort((a, b) => {
@@ -37,7 +39,7 @@ export const useStore = create<WithLiveblocks<State>>()(
         }
 
         const gamesWithHome = get().results.filter(r =>
-          [r.winner.title, r.loser.title].includes(home.title)
+          [r.home.title, r.away.title].includes(home.title)
         )
 
         // always choose the opponent with which the home player has played the least games
@@ -46,7 +48,7 @@ export const useStore = create<WithLiveblocks<State>>()(
           .map(player => ({
             ...player,
             gamesAgainst: gamesWithHome.filter(r =>
-              [r.winner.title, r.loser.title].includes(player.title)
+              [r.home.title, r.away.title].includes(player.title)
             ),
           }))
           .sort((a, b) => {
@@ -59,10 +61,15 @@ export const useStore = create<WithLiveblocks<State>>()(
       },
 
       reset: () => set(() => ({ players: [], results: [], game: { home: null, away: null } })),
+
+      isolatedPlayer: null,
+      isolate: player => set(() => ({ isolatedPlayer: player })),
     }),
     { client, storageMapping: { players: true, results: true } }
   )
 )
+
+type GameType = 'home' | 'away'
 
 interface State {
   players: Player[]
@@ -77,9 +84,13 @@ interface State {
     home: Player | null
     away: Player | null
   }
+  updateGamePlayer: (type: GameType, player: Player) => void
   newGame: () => void
 
   reset: () => void
+
+  isolatedPlayer: Player | null
+  isolate: (player: Player | null) => void
 }
 
 export interface Player {
@@ -90,8 +101,8 @@ export interface Player {
 }
 
 export interface GameResult {
-  winner: Player
-  loser: Player
+  home: Player & { win: boolean }
+  away: Player & { win: boolean }
   delta: number
   ts: number
 }

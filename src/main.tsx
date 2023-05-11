@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client'
 
 import '@unocss/reset/tailwind.css'
 import 'virtual:uno.css'
+import './index.css'
 
 import App from './app.tsx'
 

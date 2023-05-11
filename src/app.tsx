@@ -4,7 +4,8 @@ import { Status } from './components/Status'
 import { GameBoard } from './components/GameBoard'
 import { Room } from './components/Room'
 
-const ROOM = 'elo'
+const query = new URLSearchParams(location.search)
+if (!query.get('room')) location.search = `?room=${crypto.randomUUID()}`
 
 export default function App() {
   const {
@@ -12,8 +13,9 @@ export default function App() {
   } = useStore()
 
   useEffect(() => {
-    enterRoom(ROOM)
-    return () => leaveRoom(ROOM)
+    const query = new URLSearchParams(location.search)
+    enterRoom(query.get('room')!)
+    return () => leaveRoom(query.get('room')!)
   }, [])
 
   return (
