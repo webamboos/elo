@@ -1,11 +1,10 @@
-import { memo, useCallback, useEffect } from 'react'
-import { GameResult, Player, useStore } from '../store'
+import { useEffect } from 'react'
+import { Player, useStore } from '../store'
 import { useElo } from '../util/use-elo'
 
 export const GameBoard = () => {
   const { getRatingDelta } = useElo()
   const players = useStore(s => s.players)
-  const results = useStore(s => s.results)
 
   const { newGame, updatePlayer, addResult } = useStore()
   const game = useStore(s => s.game)
