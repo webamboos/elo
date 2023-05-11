@@ -23,9 +23,9 @@ export default function App() {
           <div>Elo</div>
           <Status />
         </header>
-        <main>
+        <main className="py-8">
           <GameBoard />
-          <div className="h-16"></div>
+          <div className="h-8"></div>
           <Room />
         </main>
       </section>

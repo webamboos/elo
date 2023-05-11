@@ -57,6 +57,8 @@ export const useStore = create<WithLiveblocks<State>>()(
 
         set(() => ({ game: { home, away } }))
       },
+
+      reset: () => set(() => ({ players: [], results: [], game: { home: null, away: null } })),
     }),
     { client, storageMapping: { players: true, results: true } }
   )
@@ -76,6 +78,8 @@ interface State {
     away: Player | null
   }
   newGame: () => void
+
+  reset: () => void
 }
 
 export interface Player {
