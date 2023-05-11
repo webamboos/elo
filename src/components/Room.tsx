@@ -142,10 +142,12 @@ function ResultRow({ result }: { result: GameResult }) {
       <div className="flex w-3/7">
         <div className="w-8 text-left">{result.home.win && '🏆'}</div>
         <div className="w-12 text-left text-amber-500 font-bold">{result.home.score}</div>
+
         <div className="w-12 tabular-nums text-sm h-6 flex items-center px-2 rounded-full bg-gray-200 text-center justify-center mr-2">
           {result.home.win ? '+' : '-'}
           {result.delta}
         </div>
+
         <div className="w-[24ch] overflow-hidden line-clamp-1 text-ellipsis">
           {result.home.title}
         </div>

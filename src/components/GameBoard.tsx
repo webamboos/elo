@@ -33,12 +33,10 @@ export const GameBoard = () => {
 
     updatePlayer(updatedWinner)
     updatePlayer(updatedLoser)
+
     addResult({
-      home: {
-        ...updatedWinner,
-        win: type === 'home',
-      },
-      away: { ...updatedLoser, win: type === 'away' },
+      home: { ...game.home!, win: type === 'home' },
+      away: { ...game.away!, win: type === 'away' },
       delta,
     })
 
