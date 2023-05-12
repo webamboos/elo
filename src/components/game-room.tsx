@@ -14,12 +14,15 @@ export function Room() {
   })
 
   return (
-    <div className="flex flex-col space-y-4">
+    <div className="flex flex-col space-y-4 mb-8">
       <div className="flex flex-col bg-white p-4 rounded border border-gray-200">
         <Leaderboard />
       </div>
       <div className="bg-white rounded border border-gray-200">
         <GameHistory />
+      </div>
+      <div className="bg-white rounded border border-gray-200 p-4">
+        <Users />
       </div>
     </div>
   )
@@ -37,6 +40,8 @@ function Leaderboard() {
       <thead>
         <tr>
           <th>Player</th>
+          <th>Creator</th>
+          <th className="text-right">Votes total</th>
           <th className="text-right">W</th>
           <th className="text-right">L</th>
           <th className="text-right">W/L</th>
@@ -80,11 +85,16 @@ function LeaderboardPlayer({ player, index }: { player: Player; index: number })
           </button>
         </div>
         <span className="text-gray-400 pr-1 text-right w-4">{index}.</span>{' '}
-        <span className="overflow-hidden text-ellipsis w-[24ch] line-clamp-1">{player.title}</span>
+        <span title={player.title} className="overflow-hidden text-ellipsis w-[64ch] line-clamp-1">
+          {player.title}
+        </span>
+      </td>
+      <td className="text-right">
         <div className="px-2 rounded-full text-xs bg-gray-200 h-6 flex items-center">
           👤 {users[player.createdBy]}
         </div>
       </td>
+      <td className="text-right">{player.wins + player.losses}</td>
       <td className="text-right">{player.wins}</td>
       <td className="text-right">{player.losses}</td>
       <td className="text-right">{(player.wins / (player.losses || 1)).toFixed(1)}</td>
@@ -151,5 +161,21 @@ function ResultRow({ result }: { result: GameResult }) {
         <div className="w-8 text-right">{result.away.win && '🏆'}</div>
       </div>
     </li>
+  )
+}
+
+function Users() {
+  const users = useStore(s => s.users)
+  const results = useStore(s => s.results)
+
+  return (
+    <div className="flex flex-col">
+      {Object.entries(users).map(([id, name]) => (
+        <div className="flex space-x-2">
+          <div>{name} voted</div>
+          <div>{results.filter(r => r.voter?.id === id).length} times</div>
+        </div>
+      ))}
+    </div>
   )
 }

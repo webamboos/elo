@@ -68,10 +68,8 @@ export const useStore = create<WithLiveblocks<State>>()(
             return b.wins + b.losses - (a.wins + a.losses)
           })
 
-          const chosenPlayerIndex = Math.abs(Math.round(Math.random() * (orderByGames.length - 1)))
-          const home = orderByGames[chosenPlayerIndex]
+          const home = orderByGames[orderByGames.length - 1]
           if (!home) {
-            console.log({ chosenPlayerIndex })
             return {}
           }
 
@@ -168,6 +166,7 @@ export interface Player {
 export interface GameResult {
   home: Player & { win: boolean }
   away: Player & { win: boolean }
+  voter?: User
   delta: number
   ts: number
 }

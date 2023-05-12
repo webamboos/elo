@@ -5,6 +5,7 @@ import { useElo } from '../util/use-elo'
 export const GameBoard = () => {
   const { getRatingDelta } = useElo()
   const players = useStore(s => s.players)
+  const user = useStore(s => s.user)
 
   const { newGame, updatePlayer, addResult } = useStore()
   const game = useStore(s => s.game)
@@ -37,6 +38,7 @@ export const GameBoard = () => {
     addResult({
       home: { ...game.home!, win: type === 'home' },
       away: { ...game.away!, win: type === 'away' },
+      voter: user!,
       delta,
     })
 
