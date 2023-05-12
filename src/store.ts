@@ -19,6 +19,7 @@ export const useStore = create<WithLiveblocks<State>>()(
         roomOwner: null,
         syncUser: () => {
           const user = get().user
+          if (!user) return
           set(() => ({ users: { ...get().users, [user!.id]: user!.name } }))
         },
         setUser: name => {
@@ -68,7 +69,8 @@ export const useStore = create<WithLiveblocks<State>>()(
             return b.wins + b.losses - (a.wins + a.losses)
           })
 
-          const home = orderByGames[orderByGames.length - 1]
+          const chosenPlayerIndex = Math.abs(Math.round(Math.random() * (orderByGames.length - 1)))
+          const home = orderByGames[chosenPlayerIndex]
           if (!home) {
             return {}
           }
