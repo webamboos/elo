@@ -25,18 +25,23 @@ function Lobby() {
   const nav = useNavigate()
 
   const {
-    liveblocks: { room, enterRoom, leaveRoom, isStorageLoading },
+    liveblocks: { enterRoom, leaveRoom, isStorageLoading },
     loadUser,
-    syncUser,
   } = useStore()
-  const phase = useStore(s => s.phase)
 
-  useEffect(() => {
-    if (phase === 'game') {
-      nav({ to: '/game', search: { room: query.room } })
-      nav({ to: '/game', search: { room: query.room } })
-    }
-  }, [phase, room])
+  useEffect(
+    () =>
+      useStore.subscribe(
+        s => s.phase,
+        phase => {
+          if (phase === 'game') {
+            nav({ to: '/game', search: { room: query.room } })
+            nav({ to: '/game', search: { room: query.room } })
+          }
+        }
+      ),
+    []
+  )
 
   useEffect(() => {
     if (!('room' in query)) {
@@ -48,6 +53,7 @@ function Lobby() {
     if (!localStorage.getItem(query.room)) {
       nav({ to: '/', search: { room: query.room } })
       nav({ to: '/', search: { room: query.room } })
+      return
     } else {
       const user = localStorage.getItem(query.room)!
       loadUser(user)
@@ -57,18 +63,8 @@ function Lobby() {
     return () => leaveRoom(query.room)
   }, [])
 
-  useEffect(() => {
-    if (room && !isStorageLoading) {
-      const user = localStorage.getItem(query.room)!
-      if (user) {
-        loadUser(user)
-      }
-      syncUser()
-    }
-  }, [isStorageLoading, room])
-
   if (isStorageLoading) {
-    return <div>Loading...</div>
+    return <div className="w-full h-screen flex items-center justify-center">Loading...</div>
   }
 
   return (
@@ -125,27 +121,42 @@ function IdeaList({ className }: { className?: string }) {
   const user = useStore(s => s.user)
   const roomOwner = useStore(s => s.roomOwner)
   const isOwner = useMemo(() => user?.id === roomOwner?.id, [user, roomOwner])
-  const { startGame } = useStore()
+  const { startGame, setVotes, votes } = useStore()
 
   const players = useStore(s => s.players)
   const ideas = useMemo(() => players.filter(p => p.createdBy === user!.id), [players, user])
 
+  const { register, handleSubmit } = useForm<{ votes: number }>({
+    defaultValues: {
+      votes: votes || 3,
+    },
+  })
+
+  const onChange = handleSubmit(({ votes }) => {
+    if (!votes) return
+    setVotes(votes)
+    startGame()
+  })
+
   return (
     <div className={cx([className])}>
-      {isOwner && (
-        <div className="w-32 mb-8">
-          <Button onClick={startGame}>Start game</Button>
-        </div>
+      {isOwner ? (
+        <form className="flex space-x-4 items-end mb-8" onSubmit={onChange}>
+          <Input label="Total votes per idea/user" {...register('votes')} type="number" />
+          <Button>Start game</Button>
+        </form>
+      ) : (
+        <div className="mb-8">Please wait for lobby owner to start.</div>
       )}
       <hr className="mb-8" />
-      {!ideas.length && <div className="text-center">Add some ideas</div>}
-      <ul>
+      {!ideas.length && <div className="text-left text-gray-500">Add some ideas</div>}
+      <ol className="mb-4 list-decimal pl-6">
         {ideas.map(i => (
           <li className="py-2" key={i.title}>
             {i.title}
           </li>
         ))}
-      </ul>
+      </ol>
       <small className="text-gray-600 mt-4">{players.length} total from everyone</small>
     </div>
   )

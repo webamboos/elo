@@ -11,12 +11,15 @@ export const useStore = create<WithLiveblocks<State>>()(
   subscribeWithSelector(
     liveblocks(
       (set, get) => ({
+        votes: null,
+        setVotes: votes => set(() => ({ votes })),
         phase: null,
         openLobby: () => set(() => ({ phase: 'lobby' })),
         startGame: () => set(() => ({ phase: 'game' })),
 
         user: null,
         roomOwner: null,
+        users: {},
         syncUser: () => {
           const user = get().user
           if (!user) return
@@ -44,8 +47,6 @@ export const useStore = create<WithLiveblocks<State>>()(
           }))
         },
 
-        users: {},
-
         players: [],
         addPlayer: player => set(s => ({ players: [...s.players, player] })),
         removePlayer: player =>
@@ -63,6 +64,7 @@ export const useStore = create<WithLiveblocks<State>>()(
         updateGamePlayer: (type, player) => {
           set({ game: { ...get().game, [type]: player } })
         },
+
         newGame: ignored => {
           const otherPlayers = get().players.filter(
             p =>
@@ -71,17 +73,19 @@ export const useStore = create<WithLiveblocks<State>>()(
               get()
                 .results.filter(r => r.voter?.id === get().user?.id)
                 .filter(result => [result.home.title, result.away.title].includes(p.title)).length <
-                3
+                (get().votes ?? 3)
           )
+
           if (otherPlayers.length === 0) {
             set(() => ({ game: { away: null, home: null } }))
             return
           }
+
           const orderByGames = [...otherPlayers].sort((a, b) => {
             return b.wins + b.losses - (a.wins + a.losses)
           })
 
-          const chosenPlayerIndex = Date.now() % (orderByGames.length - 1)
+          let chosenPlayerIndex = Date.now() % orderByGames.length
           const home = orderByGames[chosenPlayerIndex]
           if (!home) {
             return {}
@@ -111,7 +115,7 @@ export const useStore = create<WithLiveblocks<State>>()(
 
         reset: () =>
           set(() => ({
-            players: [],
+            players: get().players.map(p => ({ ...p, losses: 0, wins: 0, score: 1000 })),
             results: [],
             game: { home: null, away: null },
             phase: 'lobby',
@@ -122,16 +126,51 @@ export const useStore = create<WithLiveblocks<State>>()(
       }),
       {
         client,
-        storageMapping: { players: true, results: true, users: true, phase: true, roomOwner: true },
+        storageMapping: {
+          players: true,
+          results: true,
+          users: true,
+          phase: true,
+          roomOwner: true,
+          votes: true,
+        },
       }
     )
   )
+)
+
+useStore.subscribe(
+  state => ({
+    room: state.liveblocks.room,
+    loading: state.liveblocks.isStorageLoading,
+    user: state.user,
+  }),
+  ({ room, loading, user }) => {
+    if (!room || loading) return
+
+    const username = localStorage.getItem(room.id)
+    if (!username) return
+
+    if (!user?.name && useStore.getState().users[username]) {
+      useStore.getState().loadUser(username)
+    }
+
+    if (!useStore.getState().users[username] && user?.name) {
+      useStore.getState().syncUser()
+    }
+  },
+  {
+    equalityFn: ({ room, loading, user }, { room: room2, loading: loading2, user: user2 }) =>
+      `${room?.id}${loading}${user?.id}` === `${room2?.id}${loading2}${user2?.id}`,
+  }
 )
 
 type GameType = 'home' | 'away'
 
 interface State {
   phase: 'lobby' | 'game' | null
+  votes: number | null
+  setVotes: (votes: number) => void
   openLobby: () => void
   startGame: () => void
 

@@ -8,6 +8,7 @@ export function RoomStatus() {
   const isOwner = useMemo(() => user?.id === roomOwner?.id, [user, roomOwner])
 
   const { reset } = useStore()
+
   function onReset() {
     if (confirm('Are you sure? This will reset the session for everyone')) {
       reset()

@@ -1,3 +1,7 @@
-import { RootRoute } from '@tanstack/router'
+import { Outlet, RootRoute } from '@tanstack/router'
 
-export const root = new RootRoute()
+export const root = new RootRoute({
+  component: () => {
+    return <Outlet />
+  },
+})

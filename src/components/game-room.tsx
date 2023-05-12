@@ -4,14 +4,24 @@ import { useNavigate } from '@tanstack/router'
 
 export function Room() {
   const nav = useNavigate()
-  const phase = useStore(s => s.phase)
 
   useEffect(() => {
-    if (phase === 'lobby') {
+    if (useStore.getState().phase === 'lobby') {
       nav({ to: '/lobby', search: l => ({ room: l.room! }) })
       nav({ to: '/lobby', search: l => ({ room: l.room! }) })
+      return
     }
-  })
+
+    return useStore.subscribe(
+      s => s.phase,
+      phase => {
+        if (phase === 'lobby') {
+          nav({ to: '/lobby', search: l => ({ room: l.room! }) })
+          nav({ to: '/lobby', search: l => ({ room: l.room! }) })
+        }
+      }
+    )
+  }, [])
 
   return (
     <div className="flex flex-col space-y-4 mb-8">

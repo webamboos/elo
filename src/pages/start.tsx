@@ -2,7 +2,6 @@ import { Route, useNavigate, useSearch } from '@tanstack/router'
 import { root } from './_root'
 import { useForm } from 'react-hook-form'
 import { useStore } from '../store'
-import { useEffect } from 'react'
 import { Button } from '../components/button'
 import { Input } from '../components/input'
 
@@ -21,42 +20,16 @@ function Start() {
   })
 
   const {
-    liveblocks: { enterRoom, room, connection, leaveRoom },
+    liveblocks: { connection },
     setUser,
-    syncUser,
   } = useStore()
-  const user = useStore(s => s.user)
 
-  useEffect(() => {
-    if (query.room) {
-      enterRoom(query.room)
-      return () => leaveRoom(query.room!)
-    }
-  }, [query])
-
-  useEffect(() => {
-    if (!room) return
-    if (query.room && user) {
-      nav({ to: '/lobby', search: { room: room.id } })
-      nav({ to: '/lobby', search: { room: room.id } })
-    }
-
-    room?.subscribe('connection', async event => {
-      if (event === 'open') {
-        syncUser()
-        await nav({ to: '/lobby', search: { room: room.id } })
-        await nav({ to: '/lobby', search: { room: room.id } })
-      }
-    })
-  }, [room, user])
-
-  const onSubmit = handleSubmit(input => {
+  const onSubmit = handleSubmit(async input => {
     const user = setUser(input.name)
     localStorage.setItem(input.room, user.id)
 
-    if (!query.room) {
-      enterRoom(input.room)
-    }
+    await nav({ to: '/lobby', search: { room: input.room } })
+    await nav({ to: '/lobby', search: { room: input.room } })
   })
 
   return (

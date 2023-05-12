@@ -46,7 +46,7 @@ export const GameBoard = () => {
   }
 
   if (!game.home || !game.away)
-    return <div className="text-center p-8 bg-amber-100">Add at least 2 players to start</div>
+    return <div className="text-center p-8 bg-amber-100">No more votes left</div>
 
   return (
     <div className="flex bg-gray-100 shadow-inner w-full h-64 py-8 items-center justify-center rounded-lg space-x-8">

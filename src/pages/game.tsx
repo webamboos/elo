@@ -22,37 +22,25 @@ function Game() {
 
   const nav = useNavigate()
   const {
-    liveblocks: { room, enterRoom, leaveRoom, isStorageLoading },
-    loadUser,
-    syncUser,
+    liveblocks: { enterRoom, leaveRoom, isStorageLoading },
   } = useStore()
 
   useEffect(() => {
     if (!('room' in query)) {
+      nav({ to: '/' })
       nav({ to: '/' })
       return
     }
 
     if (!localStorage.getItem(query.room)) {
       nav({ to: '/', search: { room: query.room } })
-    } else {
-      const user = localStorage.getItem(query.room)!
-      loadUser(user)
+      nav({ to: '/', search: { room: query.room } })
+      return
     }
 
     enterRoom(query.room)
     return () => leaveRoom(query.room)
   }, [])
-
-  useEffect(() => {
-    if (room && !isStorageLoading) {
-      const user = localStorage.getItem(query.room)!
-      if (user) {
-        loadUser(user)
-      }
-      syncUser()
-    }
-  }, [isStorageLoading, room])
 
   if (isStorageLoading) {
     return <div>Loading...</div>
