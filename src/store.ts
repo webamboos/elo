@@ -65,8 +65,18 @@ export const useStore = create<WithLiveblocks<State>>()(
         },
         newGame: ignored => {
           const otherPlayers = get().players.filter(
-            p => p.createdBy !== get().user!.id && !ignored?.includes(p.title)
+            p =>
+              p.createdBy !== get().user!.id &&
+              !ignored?.includes(p.title) &&
+              get()
+                .results.filter(r => r.voter?.id === get().user?.id)
+                .filter(result => [result.home.title, result.away.title].includes(p.title)).length <
+                3
           )
+          if (otherPlayers.length === 0) {
+            set(() => ({ game: { away: null, home: null } }))
+            return
+          }
           const orderByGames = [...otherPlayers].sort((a, b) => {
             return b.wins + b.losses - (a.wins + a.losses)
           })
