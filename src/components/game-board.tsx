@@ -77,7 +77,7 @@ function PlayerCard(props: {
   return (
     <button
       onClick={() => props.onSelect(props.type)}
-      className="h-full w-64 bg-gray-200 border border-gray-300 rounded hover:bg-blue-500 hover:text-white transition transform active:scale-[.98] flex flex-col justify-center items-center"
+      className="h-full w-full bg-gray-200 border border-gray-300 rounded hover:bg-blue-500 hover:text-white transition transform active:scale-[.98] flex flex-col justify-center items-center"
     >
       <h1 className="text-center font-bold text-xl">{props.player.title}</h1>({props.player.score})
     </button>
