@@ -1,12 +1,12 @@
-import { Route, useNavigate, useRouter, useSearch } from '@tanstack/router'
+import { Route, useNavigate, useSearch } from '@tanstack/router'
 import { cx } from 'class-variance-authority'
-import { root } from './_root'
-import { useStore } from '../store'
 import { useEffect, useMemo } from 'react'
-import { Input } from '../components/input'
-import { Button } from '../components/button'
 import { useForm } from 'react-hook-form'
+import { Button } from '../components/button'
+import { Input } from '../components/input'
 import { RoomStatus } from '../components/room-status'
+import { useStore } from '../store'
+import { root } from './_root'
 
 export const lobby = new Route({
   path: 'lobby',
