@@ -63,13 +63,15 @@ export const useStore = create<WithLiveblocks<State>>()(
         updateGamePlayer: (type, player) => {
           set({ game: { ...get().game, [type]: player } })
         },
-        newGame: () => {
-          const otherPlayers = get().players.filter(p => p.createdBy !== get().user!.id)
+        newGame: ignored => {
+          const otherPlayers = get().players.filter(
+            p => p.createdBy !== get().user!.id && !ignored?.includes(p.title)
+          )
           const orderByGames = [...otherPlayers].sort((a, b) => {
             return b.wins + b.losses - (a.wins + a.losses)
           })
 
-          const chosenPlayerIndex = Math.abs(Math.round(Math.random() * (orderByGames.length - 1)))
+          const chosenPlayerIndex = Date.now() % (orderByGames.length - 1)
           const home = orderByGames[chosenPlayerIndex]
           if (!home) {
             return {}
@@ -144,7 +146,7 @@ interface State {
     away: Player | null
   }
   updateGamePlayer: (type: GameType, player: Player) => void
-  newGame: () => void
+  newGame: (ignored?: string[]) => void
 
   reset: () => void
 

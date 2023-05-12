@@ -171,7 +171,7 @@ function Users() {
   return (
     <div className="flex flex-col">
       {Object.entries(users).map(([id, name]) => (
-        <div className="flex space-x-2">
+        <div key={id} className="flex space-x-2">
           <div>{name} voted</div>
           <div>{results.filter(r => r.voter?.id === id).length} times</div>
         </div>

@@ -42,7 +42,7 @@ export const GameBoard = () => {
       delta,
     })
 
-    newGame()
+    newGame([updatedWinner.title, updatedLoser.title])
   }
 
   if (!game.home || !game.away)
