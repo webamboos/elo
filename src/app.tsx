@@ -1,35 +1,37 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useStore } from './store'
-import { Status } from './components/Status'
-import { GameBoard } from './components/GameBoard'
-import { Room } from './components/Room'
+import { RoomStatus } from './components/room-status'
+import { GameBoard } from './components/game-board'
+import { Room } from './components/game-room'
 
 const query = new URLSearchParams(location.search)
 if (!query.get('room')) location.search = `?room=${crypto.randomUUID()}`
 
 export default function App() {
+  const [isJoining, setIsJoining] = useState(true)
   const {
-    liveblocks: { enterRoom, leaveRoom },
+    liveblocks: { enterRoom, leaveRoom, isStorageLoading },
   } = useStore()
 
   useEffect(() => {
     const query = new URLSearchParams(location.search)
     enterRoom(query.get('room')!)
+    setIsJoining(false)
     return () => leaveRoom(query.get('room')!)
   }, [])
+
+  if (isJoining || isStorageLoading)
+    return <div className="w-full h-screen flex items-center justify-center">Please wait...</div>
 
   return (
     <div className="w-full">
       <section className="container mx-auto flex flex-col">
         <header className="flex justify-between items-center h-10">
           <div>Elo</div>
-          <Status />
+          <RoomStatus />
         </header>
-        <main className="py-8">
-          <GameBoard />
-          <div className="h-8"></div>
-          <Room />
-        </main>
+
+        <main className="py-8"></main>
       </section>
     </div>
   )

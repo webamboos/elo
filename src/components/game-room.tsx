@@ -1,52 +1,27 @@
-import { useMemo } from 'react'
-
-import { useForm } from 'react-hook-form'
+import { useEffect, useMemo } from 'react'
 import { GameResult, Player, useStore } from '../store'
+import { useNavigate } from '@tanstack/router'
 
 export function Room() {
+  const nav = useNavigate()
+  const phase = useStore(s => s.phase)
+
+  useEffect(() => {
+    if (phase === 'lobby') {
+      nav({ to: '/lobby', search: l => ({ room: l.room! }) })
+      nav({ to: '/lobby', search: l => ({ room: l.room! }) })
+    }
+  })
+
   return (
-    <div className="flex space-x-8 items-start">
-      <div className="w-1/3 flex flex-col bg-gray-100 p-4 rounded border border-gray-200">
-        <AddPlayerForm />
+    <div className="flex flex-col space-y-4">
+      <div className="flex flex-col bg-white p-4 rounded border border-gray-200">
         <Leaderboard />
       </div>
-      <div className="w-2/3 bg-gray-100 rounded border border-gray-200">
+      <div className="bg-white rounded border border-gray-200">
         <GameHistory />
       </div>
     </div>
-  )
-}
-
-function AddPlayerForm() {
-  const players = useStore(s => s.players)
-  const { addPlayer } = useStore()
-  const { handleSubmit, register, reset } = useForm<Player>()
-
-  const onAddPlayer = handleSubmit(values => {
-    console.log(values)
-    if (players.find(player => player.title === values.title)) return alert('Player already exists')
-
-    addPlayer({
-      title: values.title,
-      losses: 0,
-      score: 1000,
-      wins: 0,
-    })
-    reset()
-  })
-  return (
-    <form onSubmit={onAddPlayer} className="flex flex-col mb-4">
-      <div className="flex space-x-2">
-        <input {...register('title')} type="text" placeholder="Player name" className="flex-1" />
-        <button className="h-full">Add player</button>
-      </div>
-      <div>
-        <small className="text-gray-500">
-          Use <kbd className="bg-gray-200 px-1 rounded border border-gray-300">Enter</kbd> to add a
-          player quickly
-        </small>
-      </div>
-    </form>
   )
 }
 
@@ -79,6 +54,7 @@ function Leaderboard() {
 
 function LeaderboardPlayer({ player, index }: { player: Player; index: number }) {
   const isolatedPlayer = useStore(s => s.isolatedPlayer)
+  const users = useStore(s => s.users)
   const { removePlayer, isolate } = useStore()
 
   function toggleIsolation() {
@@ -105,6 +81,9 @@ function LeaderboardPlayer({ player, index }: { player: Player; index: number })
         </div>
         <span className="text-gray-400 pr-1 text-right w-4">{index}.</span>{' '}
         <span className="overflow-hidden text-ellipsis w-[24ch] line-clamp-1">{player.title}</span>
+        <div className="px-2 rounded-full text-xs bg-gray-200 h-6 flex items-center">
+          👤 {users[player.createdBy]}
+        </div>
       </td>
       <td className="text-right">{player.wins}</td>
       <td className="text-right">{player.losses}</td>

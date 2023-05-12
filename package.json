@@ -12,18 +12,22 @@
   "dependencies": {
     "@liveblocks/client": "^1.0.8",
     "@liveblocks/zustand": "^1.0.8",
+    "@tanstack/router": "0.0.1-beta.89",
     "@unocss/reset": "^0.51.8",
     "framer-motion": "^10.12.10",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.43.9",
+    "unique-names-generator": "^4.7.1",
     "zustand": "^4.3.8"
   },
   "devDependencies": {
     "@julr/unocss-preset-forms": "^0.0.5",
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.0.11",
+    "@unocss/transformer-directives": "^0.51.12",
     "@vitejs/plugin-react": "^4.0.0",
+    "class-variance-authority": "^0.6.0",
     "prettier": "^2.8.8",
     "typescript": "^5.0.2",
     "unocss": "^0.51.8",
